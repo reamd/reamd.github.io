@@ -1,0 +1,117 @@
+---
+import qrcodeMp from "../assets/sponsors/qrcode_mp.jpg?url";
+
+interface Props {
+  smallPadding?: boolean;
+}
+
+interface Sponsor {
+  name: string;
+  img: string;
+  url?: string;
+}
+const sponsors: Sponsor[] = [
+  {
+    name: "DJ荒野",
+    img: qrcodeMp,
+    // url: "https://github.com/reamd", //友情链接
+  }
+];
+
+const { smallPadding } = Astro.props;
+---
+
+<section class="sponsors not-content" class:list={[{ "small-padding": smallPadding }]}>
+  {
+    sponsors.map((sponsor) =>
+      (sponsor.url ? <a href={sponsor.url}>
+        <article class:list={[{ "small-padding": smallPadding }]}>
+          <h4>{sponsor.name}</h4>
+          <Fragment set:html={sponsor.img} />
+        </article></a> :
+        <article class="over-bg" class:list={[{ "small-padding": smallPadding }]}>
+          <h4>{sponsor.name}</h4>
+          <img src={sponsor.img} />
+        </article>)
+      )
+    }
+</section>
+<!-- <section class="not-content cta-github-container">
+  <a class="cta-github" href="https://github.com/reamd"> Sponsor me</a>
+</section> -->
+
+<style>
+  .sponsors {
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    gap: 0.25rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  .sponsors.small-padding a {
+    width: 100%;
+  }
+  .sponsors a {
+    width: 34%;
+    flex-grow: 1;
+  }
+  .sponsors a.large {
+    width: 100%;
+  }
+  article {
+    display: flex;
+    /* background-color: var(--sl-color-gray-6); */
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem;
+    width: 100%;
+    height: 100%;
+    filter: grayscale(100%);
+    transition: background-color 0.2s ease;
+  }
+  article.small-padding {
+    padding: 0;
+  }
+  article.over-bg {
+    filter: none;
+  }
+  article:hover {
+    background-color: var(--sl-color-gray-1);
+    transform: scale(1.05);
+  }
+  :root[data-theme="dark"] article:hover :global(.sponsor-name) {
+    fill: black;
+  }
+  :root[data-theme="light"] article:hover :global(.sponsor-name) {
+    fill: white;
+  }
+  h4 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+  }
+  .cta-github-container {
+    text-align: center;
+  }
+  .cta-github {
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--sl-color-text-accent);
+    display: inline !important;
+  }
+  .cta-github:hover {
+    color: var(--sl-color-accent);
+  }
+</style>
+
+<style is:global>
+  :root[data-theme="light"] .sponsor-name {
+    fill: black;
+  }
+</style>

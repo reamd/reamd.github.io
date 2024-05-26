@@ -1,0 +1,47 @@
+---
+title: DJ的前端荒野
+description: DJ的前端荒野
+head:
+  - tag: title
+    content: 🎉欢迎做客👏，DJ的前端荒野
+template: splash
+# banner:
+#   content: |
+#     公告<a href="https://example.com">Check it out</a>
+hero:
+  tagline: 前端开发DJ，分享技术，成长等。让我们一起探索人生，争做数字游民，点亮自己的荒野。
+  image:
+    file: ../../assets/logo.jpg
+  actions:
+    - text: TODO?
+      link: /article/todo
+      icon: right-arrow
+      variant: primary
+    - text: 关于我
+      link: https://github.com/reamd
+      icon: right-arrow
+      variant: secondary
+    - text: View on GitHub
+      link: https://github.com/reamd
+      icon: external
+      variant: minimal
+# 不收录到搜索中
+pagefind: false
+lastUpdated: false
+# Exclude this page from production builds
+# draft: true
+# editUrl: true
+---
+import { Card, CardGrid } from "@astrojs/starlight/components";
+import ModifyHeader from "$components/ModifyHeader.astro";
+
+<ModifyHeader />
+
+## 工具
+<div class="not-content">
+  <CardGrid stagger={false}>
+    <Card title="正念时钟" icon="seti:clock">
+      <a href="https://reamd.github.io/mindfulness-clock" target="_blank">去使用</a>
+    </Card>
+  </CardGrid>
+</div>

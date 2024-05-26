@@ -1,0 +1,77 @@
+---
+title: 文章教程
+# Exclude this page from production builds
+draft: true
+---
+
+> 文章语法示例
+
+import { Tabs, TabItem, Aside, FileTree } from "@astrojs/starlight/components";
+
+> 💡 可以在github上找到我
+
+## 概述
+
+- [Visual Studio Code](https://code.visualstudio.com/) version 1.55 or higher.
+- [Node.js](https://nodejs.org/en/) version 14 or higher.
+
+## 开始
+<Tabs>
+<TabItem label="npm">
+
+```sh
+# create a new project with npm
+npm init
+```
+
+</TabItem>
+<TabItem label="pnpm">
+
+```sh
+# create a new project with pnpm
+pnpm init
+```
+
+</TabItem>
+<TabItem label="Yarn">
+
+```sh
+# create a new project with yarn
+yarn init .
+```
+
+</TabItem>
+</Tabs>
+
+<Aside type="note">
+Note示例
+</Aside>
+
+### 目录结构示例
+<FileTree>
+
+- .vscode/
+  - launch.json
+- packages/
+  - client/
+    - package.json
+  - server/
+    - package.json
+- package.json
+- tsconfig.base.json
+
+</FileTree>
+
+## 代码示例
+```ts title="packages/server/src/languagePlugin.ts" collapse={1-2} ins={5-7, 9} ins=/(VirtualCode) }/
+import type { LanguagePlugin, VirtualCode } from "@volar/language-core";
+
+export const language = {
+  createVirtualCode(fileId, languageId, snapshot) {
+    if (languageId === "html1") {
+      return new Html1Code(fileId, languageId, snapshot);
+    }
+  },
+}
+```
+教程结束！

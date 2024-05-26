@@ -1,0 +1,78 @@
+/* Dark mode colors. */
+:root {
+  --sl-color-accent-low: #0e2149;
+  --sl-color-accent: #1257ee;
+  --sl-color-accent-high: #8db4fc;
+  --sl-color-white: #ffffff;
+  --sl-color-gray-1: #eeeded;
+  --sl-color-gray-2: #c2c2c2;
+  --sl-color-gray-3: #8c8b8b;
+  --sl-color-gray-4: #595858;
+  --sl-color-gray-5: #393838;
+  --sl-color-gray-6: #272627;
+  --sl-color-black: #181818;
+
+  --sl-color-bg-sidebar: #1f1f1f;
+}
+/* Light mode colors. */
+:root[data-theme="light"] {
+  --sl-color-accent-low: #c2d8ff;
+  --sl-color-accent: #1459f1;
+  --sl-color-accent-high: #0f2c6d;
+  --sl-color-white: #181818;
+  --sl-color-gray-1: #272627;
+  --sl-color-gray-2: #393838;
+  --sl-color-gray-3: #595858;
+  --sl-color-gray-4: #8c8b8b;
+  --sl-color-gray-5: #c2c2c2;
+  --sl-color-gray-6: #eeeded;
+  --sl-color-gray-7: #f6f6f6;
+  --sl-color-black: #ffffff;
+}
+
+.site-title {
+  gap: 0.5rem !important;
+  color: var(--sl-color-white);
+}
+
+.site-title:hover {
+  color: var(--sl-color-text-accent);
+}
+
+.card-cnt {
+  margin-top: 7rem !important;
+}
+
+[aria-current="page"],
+[aria-current="page"]:hover,
+[aria-current="page"]:focus {
+  color: var(--sl-color-text-accent) !important;
+  background-color: initial;
+}
+
+:root[data-theme="dark"] mobile-starlight-toc nav {
+  background-color: #1f1f1f;
+}
+
+a {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+button {
+  transition-property: border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+starlight-toc li a span {
+  word-wrap: normal;
+}
+
+@media (min-width: 50rem) {
+  .hero {
+    padding-block: clamp(2.5rem,calc(1rem + 10vmin),3rem);
+  }
+}

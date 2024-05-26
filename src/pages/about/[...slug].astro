@@ -1,0 +1,25 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import AboutLayout from "$layouts/About.astro";
+import StarlightSplashLayout from "@astrojs/starlight/components/Page.astro";
+import { getImage } from "astro:assets";
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection("about");
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<"about">;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<AboutLayout post={entry}>
+  <Content />
+</AboutLayout>
