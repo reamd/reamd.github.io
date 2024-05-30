@@ -1,0 +1,61 @@
+<div class="words-item">
+  <span class="word"><slot /></span>
+  <span class="tip">英</span>
+  <span class="tip">美</span>
+  <span class="tip">口型</span>
+</div>
+
+<script>
+  (function () {
+    function youdao(word: string, type: number) {
+      const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=${type}`;
+      new Audio(url).play();
+    }
+
+    function bindEvt(item: HTMLElement) {
+      const word = (item.querySelector(".word") as HTMLElement).innerText;
+      if (word.indexOf(" ") > -1) {
+        const tips = item.querySelectorAll(".tip");
+        tips[2].setAttribute('style', 'display: none;');
+      }
+
+      item.addEventListener("click", ({ target }) => {
+        if (target) {
+          switch ((target as HTMLElement).innerText) {
+            case "英":
+              youdao(word, 1);
+              break;
+            case "美":
+              youdao(word, 2);
+              break;
+            case "口型":
+              window.open(`https://www.google.com.hk/search?q=how+to+pronounce+${word}`);
+              break;
+            default:
+              break;
+          }
+        }
+      });
+    }
+
+    const items: NodeListOf<HTMLElement> = document.querySelectorAll("div.words-item");
+    items.forEach((item: HTMLElement) => {
+        bindEvt(item);
+    });
+  })();
+</script>
+
+<style>
+  .tip {
+    color: #10b981;
+    display: inline-block;
+    margin-left: 8px;
+    border: 1px solid #10b981;
+    border-radius: 10px;
+    padding: 0 4px;
+    line-height: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+</style>

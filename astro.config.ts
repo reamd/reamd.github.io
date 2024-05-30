@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
   site: "https://reamd.github.io",
+
   integrations: [
     starlight({
       logo: {
@@ -12,7 +13,7 @@ export default defineConfig({
         alt: "Blog's logo",
       },
       expressiveCode: {
-        plugins: [pluginCollapsibleSections()],
+        plugins: [pluginCollapsibleSections()]
       },
       title: "DJ的前端荒野",
       description: "前端开发DJ，分享技术，成长等。让我们一起探索人生，争做数字游民，点亮自己的荒野。",
@@ -24,7 +25,6 @@ export default defineConfig({
       },
       social: {
         github: "https://github.com/reamd/",
-        'x.com': "https://x.com/DJ_wilderness",
       },
       customCss: ["./src/styles/custom.css"],
       // editLink: {
@@ -37,17 +37,25 @@ export default defineConfig({
         PageTitle: "./src/components/starlight/PageTitle.astro",
       },
       sidebar: [
+        { label: '首页', link: '/' },
         {
-          label: "文章",
+          label: "原创文章",
           autogenerate: { directory: 'article' },
+          // collapsed: true,
           // items: [
           //   { label: "Why Volar?", link: "/article/why-volar" },
           // ],
         },
         {
-          label: "Guides",
-          autogenerate: { directory: 'guides' },
+          label: "技术译文",
+          autogenerate: { directory: 'translations' },
         },
+        {
+          label: "早期博文-博客园",
+          link: 'https://www.cnblogs.com/reamd',
+          attrs: { target: '_blank' }
+        },
+        // { label: '文章教程', link: '/example' },
       ],
     }),
   ],

@@ -1,0 +1,118 @@
+---
+title: 浏览器重绘的异步机制
+---
+## 示例
+来看一段用来更新DOM内容和打印内容日志js代码：
+```html
+<span id="element">
+  original text
+</span>
+
+<script async>
+  document.getElementById('element').innerHTML = "updated text";
+  console.log(element.innerHTML);
+</script>
+```
+
+页面加载后，“updated text”将显示在浏览器窗口。`console.log()`执行后，也会得到相同的值。
+`console.log()`输出这个结果并不奇怪，因为DOM更新是一个同步事件。修改DOM对象的属性，该更改将被放到调用堆栈上，并且在堆栈再次为空之前，不会执行任何后续事件。
+这就是`JavaScript`事件循环的工作方式“先进先出”，尽管有些事件只是启动浏览器API来处理的异步工作（例如`setTimeout()`）。
+
+## 单线程，不同频
+
+尽管上一节代码是同步的，但DOM变更在显示到屏幕之前，会发生以下几个过程：更新渲染树、重排以及重绘。虽然这些过程和JavaScript事件循环在同一个线程上运行，但速度不同。如下图：
+
+![https://picperf.io/https://cms.macarthur.me/content/images/2023/03/a68eaeba-1926-4e41-83db-bc2ea878bc8f-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous](https://picperf.io/https://cms.macarthur.me/content/images/2023/03/a68eaeba-1926-4e41-83db-bc2ea878bc8f-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous)
+
+横杠线条是浏览器的主线程，一切都在这里运行，除非利用Web Workers做一些代码操作。
+较细的垂直线条是JavaScript事件循环的执行频率，它的执行频率很快，触发速度与执行调用堆栈速度一样快，在这个过程中也会与浏览器API进行一些通信。
+较粗的垂直条是浏览器重绘的频率。此频率通常约为60帧/秒即60FPS，因此每帧约16.66毫秒。每次都会获取当前绘制和上一次绘制之间的所有DOM更改，然后重绘输出到屏幕。
+对我们的写代码而言，大多数的情况下，事件循环和重绘周期之间的关系无关紧要，而且与用户体验几乎无关。但有时候，整个DOM渲染到屏幕的过程，会让我们疑惑，修改DOM这一操作是否是同步的过程。
+
+## 使用`alert()`观察重绘异步行为
+
+让我们看一下其中一种情况。在本地，写一些HTML页面，使用本地Node服务器，来访问这些页面。这次，我们不使用`console.log()`输出DOM 值，而是使用`alert()`来打印它。
+当该我们执行下面代码时候，代码进入被放到调用堆栈，执行到`alert`将阻塞主线程，包括任何未完成的重绘。
+
+```js
+const element = document.getElementById('element');
+element.innerHTML = "updated text";
+alert(element.innerHTML);
+```
+
+这次刷新页面后，你会看到警告框中正确显示了“updated text”，这表明DOM更新本身确实是同步的。但是屏幕上实际渲染的内容是未更新的：
+
+![https://picperf.io/https://cms.macarthur.me/content/images/2023/03/07739e6f-da0d-4329-a501-94c78f613d00-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous](https://picperf.io/https://cms.macarthur.me/content/images/2023/03/07739e6f-da0d-4329-a501-94c78f613d00-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous)
+
+DOM对象修改完成，但相应的重绘尚未发生（还记得上一节提到的 - 事件循环的速度比浏览器的刷新速度快得多）。一旦`alert()`被解除，重绘继续进行，并且屏幕上的DOM文本也将更新。
+
+## 预测浏览器的重绘
+同样，这种情况不太可能妨碍我们实际工作的编码，但既然提到了，那我们尝试一下让浏览器器重绘可预测一些。假设我们希望仅在DOM更改绘制到屏幕后才触发`alert()`。因此，我们尝试变更一下代码。
+
+## 步骤1: 延迟执行`alert()`
+代码写到`setTimeout()`中，我们可以等待足够长的时间，让浏览器完成重绘，然后执行`alert()`。
+
+```js
+const element = document.getElementById('element');
+element.innerHTML = "updated text";
+
+setTimeout(() => {
+	alert(element.innerHTML);
+}, 20); // <-- 此处设置的延长时间大于浏览器屏幕绘制的时间
+```
+
+这样起作用了，但不是最优的解决方案，该方案主要是因为我们预估了重绘周期何时结束。这样的话会导致`alert()`产生不必要的延迟。但是，如果我们设置延迟时间小于于屏幕周期绘制时间，则无法保证在alert执行时在屏幕上看到正确的文本，因为浏览器还没来得及绘制变更的DOM。
+我们可以通过将延迟时间设置为小于刷新频率并重新加载页面几次来说明这一点。大多数时候，文本仍然会正确呈现。但渲染的文本有时不会更新到最新的文本。
+
+```js
+const element = document.getElementById('element');
+element.innerHTML = "updated text";
+
+setTimeout(() => {
+	alert(element.innerHTML);
+}, 5); // <-- 可能屏幕无法渲染出最新文本，因为此处设置的延长时间小于浏览器屏幕绘制的时间
+```
+
+由于我们无法准确预测浏览器的刷新率（尤其是考虑到可能影响主线程总体吞吐量的因素），因此该步骤里面展示的代码不是很理想。好消息是，浏览器提供了一个重绘周期相关的内置API。
+
+## 步骤2：下次重绘后，触发代码执行
+浏览器的`requestAnimationFrame`API，允许我们在浏览器下一次重绘之前触发回调，从而避免步骤1中预估的情况。为了达到精准调用，我们可能会这样写：
+
+```js
+const element = document.getElementById("element");
+element.innerHTML = "updated text";
+
+requestAnimationFrame(() => {
+	alert(element.innerHTML);
+});
+```
+
+上面的代码是行不通的。在下一次重绘之前调用是没有意义的。相反，我们希望调用发生在重绘在之后，因为此时DOM更新将被绘制到屏幕上。因此修改代码，我们只需要嵌套一下：
+
+```js
+const element = document.getElementById('element');
+element.innerHTML = "updated text";
+
+requestAnimationFrame(() => {
+	// 下次重绘之前的代码逻辑
+
+	requestAnimationFrame(() => {
+		// 下次的下次重绘之前的代码逻辑
+		// 即下次重绘之后的代码逻辑
+
+		alert(element.innerHTML);
+	});
+});
+```
+
+就这样，我们实现了想要的效果！这段代码能够让DOM更改绘制到屏幕上之后，`alert()`执行。所以，我们在`alert()`中看到的内容和页面上呈现的内容是一致的：
+
+![https://picperf.io/https://cms.macarthur.me/content/images/2023/03/8ab2010b-e60f-4d6a-8df7-242b60254509-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous](https://picperf.io/https://cms.macarthur.me/content/images/2023/03/8ab2010b-e60f-4d6a-8df7-242b60254509-1.webp?sitemap_path=/posts/when-dom-updates-appear-to-be-asynchronous)
+
+## 展望
+像这样的实验本身很有趣，而它也会影响我们更深度地思考DOM和浏览器渲染引擎之间的关系，特别是因为它会影响代码的性能。
+修改DOM属性时，发生的事情远比我们知道的要多。然而当我们对浏览器的原理掌握更透彻，它就可以帮助我们理解和解决更明显影响用户体验的一些问题，例如对DOM的更改，浏览器如何触发同步样式和布局更新。
+希望本文能启发你思考浏览器工作原理，如果你在工作中不涉及这块的话，那就当做一个兴趣吧，纯粹为了探索浏览器的更多未知功能。
+
+
+> 翻译自[When DOM Updates Appear to Be Asynchronous](https://macarthur.me/posts/when-dom-updates-appear-to-be-asynchronous/)
