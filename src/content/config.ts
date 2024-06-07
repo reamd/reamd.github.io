@@ -19,6 +19,7 @@ const aboutCollection = defineCollection({
       authors: z.array(reference("authors")),
       image: image().optional(),
       type: z.literal("about").default("about"),
+      utterances: z.boolean().default(true),
     }),
 });
 
