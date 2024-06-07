@@ -36,6 +36,7 @@ export default defineConfig({
         SiteTitle: "./src/components/starlight/SiteTitle.astro",
         TableOfContents: "./src/components/starlight/TableOfContents.astro",
         PageTitle: "./src/components/starlight/PageTitle.astro",
+        Footer: "./src/components/starlight/Footer.astro",
       },
       sidebar: [
         { label: '首页', link: '/' },

@@ -1,0 +1,27 @@
+---
+import Default from "@astrojs/starlight/components/Footer.astro";
+import { ComponentProps } from "astro/types";
+
+type Props = ComponentProps<typeof Default>;
+const { entry: { data: { utterances } } } = Astro.props;
+---
+<Default {...Astro.props }><slot /></Default>
+{utterances && <div>
+  <div class="utterances">
+      <div class="utterances-frame"></div>
+  </div>
+  <script src="https://utteranc.es/client.js"
+      repo="reamd/blog-utterances"
+      issue-term="pathname"
+      theme="github-light"
+      crossorigin="anonymous"
+      async>
+  </script>
+</div>
+}
+
+<style>
+  h2 {
+    margin-top: 2rem;
+  }
+</style>

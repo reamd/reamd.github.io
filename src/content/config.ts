@@ -23,7 +23,12 @@ const aboutCollection = defineCollection({
 });
 
 export const collections = {
-  docs: defineCollection({ schema: docsSchema() }),
+  docs: defineCollection({ schema: docsSchema({
+    extend: z.object({
+      // Add a new field to the schema.
+      utterances: z.boolean().default(true),
+    }),
+  }) }),
   about: aboutCollection,
   authors: authorCollection,
 };
