@@ -4,7 +4,7 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://reamd.github.io",
+  site: "https://blog.djfos.fun",
 
   integrations: [
     starlight({
@@ -25,6 +25,7 @@ export default defineConfig({
       },
       social: {
         github: "https://github.com/reamd/",
+        'x.com': 'https://x.com/DJ_wilderness',
       },
       customCss: ["./src/styles/custom.css"],
       // editLink: {
